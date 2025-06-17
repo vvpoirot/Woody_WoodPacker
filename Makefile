@@ -18,7 +18,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@echo "$(GREEN)Compilation ${CLR_RMV}of ${YELLOW}$(NAME) ${CLR_RMV}..."
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lssl -lcrypto
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lssl -lcrypto -lz
 	@echo "$(GREEN)$(NAME) created[0m ✔️"
 
 %.o: %.c
