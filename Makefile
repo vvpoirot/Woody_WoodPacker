@@ -30,7 +30,7 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
-	@rm -f woody
+	@rm -f woody pecker
 	@ echo "$(RED)Deleting $(CYAN)$(NAME) $(CLR_RMV)binary ✔️"
 
 re: fclean all

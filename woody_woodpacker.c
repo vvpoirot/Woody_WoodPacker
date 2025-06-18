@@ -7,7 +7,12 @@
 #include <fcntl.h>
 #include <zlib.h>
 
-#define CHUNK 16384
+#define NUM_SYMBOLS 256
+typedef struct Node {
+    unsigned char character;
+    unsigned int frequency;
+    struct Node *left, *right;
+} Node;
 
 void ft_error(char* msg)
 {
@@ -38,42 +43,43 @@ off_t getFileSize(int fd) {
     return (size);
 }
 
-void ft_compress(int inputFD, int outputFD) {
-    off_t input_len = getFileSize(inputFD);
-    char* input_buffer = malloc((long long)input_len);
-    if (input_buffer == NULL) {
-        close(inputFD);
-        close(outputFD);
-        ft_error("Malloc crash #1\n");
+void build(Node* root, unsigned int* frequencies) {
+    unsigned int high_frec = 0;
+    int index;
+    for (ssize_t i = 0; i < NUM_SYMBOLS; i++) {
+        if (frequencies[i] >= high_frec)
+            index = i;
     }
-    if (read(inputFD, input_buffer, (long long)input_len) == -1) {
-        close(outputFD);
+}
+
+void ft_compress(int inputFD, int outputFD) {
+    off_t buff_len = getFileSize(inputFD);
+    char* buff = (char*)malloc((long long)buff_len);
+    if (!buff) {
         close(inputFD);
-        free(input_buffer);
+        close(outputFD);
+        ft_error("Malloc crash");
+    }
+    ssize_t bytes = read(inputFD, buff, sizeof(buff_len));
+    if (bytes == -1) {
+        close(inputFD);
+        close(outputFD);
+        free(buff);
         ft_error("Read crash\n");
     }
 
-    uLongf output_len = compressBound((long long)input_len);
-    Bytef* output_buffer = (Bytef*)malloc(output_len);
-    if (!output_buffer) {
-        close(outputFD);
-        close(inputFD);
-        free(input_buffer);
-        ft_error("Malloc crash #2\n");
-    }
+    Node* root;
 
-    int res = compress(output_buffer, &output_len, (const Bytef*)input_buffer, input_len);
-    if (res != Z_OK) {
-        close(outputFD);
-        close(inputFD);
-        free(input_buffer);
-        free(output_buffer);
-        ft_error("Compress crash\n");
-    }
-    write(outputFD, output_buffer, output_len);
-    free(input_buffer);
-    free(output_buffer);
-    printf("Compress complete !\n");
+    unsigned int frequencies[NUM_SYMBOLS] = {0};
+    for (ssize_t i = 0; i < bytes; i++)
+        frequencies[(unsigned char)buff[i]]++;
+
+    build(&root, &frequencies);
+    //generate codes
+    //write in output FD
+
+    free(buff);
+    printf("File compressed!\n");
 }
 
 void ft_uncompress(int inputFD, int outputFD) {
@@ -113,6 +119,7 @@ void ft_uncompress(int inputFD, int outputFD) {
     free(output_buffer);
     printf("Uncompress complete !\n");
 }
+
 int main(int argc, char** argv) {
     if (argc != 2)
         ft_error("Wrong number of arg\n");
@@ -123,11 +130,11 @@ int main(int argc, char** argv) {
     ft_compress(inputFD, outputFD);
     close(inputFD);
     close(outputFD);
-    
-    int woodyFD = open("woody", O_RDONLY);
-    int destFD = open("pecker", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    ft_uncompress(woodyFD, destFD);
-    close(woodyFD);
-    close(destFD);
+
+    // int woodyFD = open("woody", O_RDONLY);
+    // int destFD = open("pecker", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    // ft_uncompress(woodyFD, destFD);
+    // close(woodyFD);
+    // close(destFD);
     return (EXIT_SUCCESS);
 }
