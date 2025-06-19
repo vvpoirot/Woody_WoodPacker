@@ -29,4 +29,9 @@ Le [TEA](https://fr.wikipedia.org/wiki/Tiny_Encryption_Algorithm) est un algo de
 
 ## Algorithme de compression
 
-
+Il nous faut un algo de type lossless (sans perte de donnee) et avec un ratio equilibre entre la vitesse et le taux de compression.
+En temps normal les meilleurs algo vont avoir des pertes et vont priorise le taux de compression, mais dans un packer la decompression doit se faire
+au moment de l'execution du programme donc elle doit aller vite.
+L'algo choisi est celui d'Huffman qui a pour principe de former un arbre binaire pour relier chaque elements a un code.
+Les elements avec avec une haute repetitions auront un code petit et inversement pour les elements a haute repetitions. <br>
+![alt text](image.png)
