@@ -35,41 +35,74 @@ void decrypt(uint32_t *v, const uint32_t *k) {
     v[1] = v1;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 4) {
-        fprintf(stderr, "Usage: %s <encrypt|decrypt> <input file> <output file>\n", argv[0]);
-        return EXIT_FAILURE;
+void generate_key(uint32_t *key, size_t keySize) {
+    int randomData = open("/dev/urandom", O_RDONLY);
+    if (randomData < 0) {
+        printf("Error opening /dev/urandom");
+        exit(EXIT_FAILURE);
+    }
+    ssize_t result = read(randomData, key, keySize);
+    if (result < 0) {
+        printf("Error reading from /dev/urandom");
+        close(randomData);
+        exit(EXIT_FAILURE);
+    }
+    close(randomData);
+}
+
+
+// get key from argv[4]
+void get_key(uint32_t *key, const char *key_str) {
+    size_t len = strlen(key_str);
+    if (len != 32) {
+        printf("Error: Key must be 32 hexadecimal characters long.\n");
+        exit(EXIT_FAILURE);
     }
 
+    for (int i = 0; i < 4; i++) {
+        char hex[9];
+        strncpy(hex, key_str + i * 8, 8);
+        hex[8] = '\0';
+        key[i] = (uint32_t)strtoul(hex, NULL, 16);
+    }
+}
+
+int main(int argc, char *argv[]) {
     const char *mode = argv[1];
     const char *inputFilename = argv[2];
     const char *outputFilename = argv[3];
 
     int inputFd = open(inputFilename, O_RDONLY);
     if (inputFd == -1) {
-        perror("Error opening input file");
+        printf("Error opening input file\n");
         return EXIT_FAILURE;
     }
 
     int outputFd = open(outputFilename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (outputFd == -1) {
-        perror("Error opening output file");
+        printf("Error opening output file\n");
         close(inputFd);
         return EXIT_FAILURE;
     }
 
     uint32_t block[2];
-    uint32_t key[] = {0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210}; // 128-bit key
+    uint32_t key[4];
+
+    if (strcmp(mode, "encrypt") == 0 && argc == 4) {
+        generate_key(key, sizeof(key));
+        printf("Generated key: %08X%08X%08X%08X\n", key[0], key[1], key[2], key[3]);
+    }
 
     ssize_t bytesRead;
     while ((bytesRead = read(inputFd, block, sizeof(block))) > 0) {
         if (bytesRead == sizeof(block)) {
-            if (strcmp(mode, "encrypt") == 0) {
+            if (strcmp(mode, "encrypt") == 0 && argc == 4) {
                 encrypt(block, key);
-            } else if (strcmp(mode, "decrypt") == 0) {
+            } else if (strcmp(mode, "decrypt") == 0 && argc == 5) {
+                get_key(key, argv[4]);
                 decrypt(block, key);
             } else {
-                fprintf(stderr, "Invalid mode: %s\n", mode);
+                printf("Usage: %s <encrypt|decrypt> <input file> <output file> <decrypt key>\n", argv[0]);
                 close(inputFd);
                 close(outputFd);
                 return EXIT_FAILURE;
@@ -79,9 +112,8 @@ int main(int argc, char *argv[]) {
             // Handle the last block if it's not a complete 64-bit block
             uint8_t lastBlock[sizeof(block)];
             memcpy(lastBlock, block, bytesRead);
-            for (size_t i = bytesRead; i < sizeof(block); i++) {
+            for (size_t i = bytesRead; i < sizeof(block); i++)
                 lastBlock[i] = 0; // Pad with zeros
-            }
             memcpy(block, lastBlock, sizeof(block));
 
             if (strcmp(mode, "encrypt") == 0) {
@@ -89,7 +121,7 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(mode, "decrypt") == 0) {
                 decrypt(block, key);
             } else {
-                fprintf(stderr, "Invalid mode: %s\n", mode);
+                printf("Invalid mode: %s\n", mode);
                 close(inputFd);
                 close(outputFd);
                 return EXIT_FAILURE;
