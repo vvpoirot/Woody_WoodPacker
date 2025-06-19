@@ -2,7 +2,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 NAME = woody_woodpacker
-SRC = woody_woodpacker.c
+SRC = woody_woodpacker.c \
+		huffman.c
 OBJ = $(SRC:.c=.o)
 
 
