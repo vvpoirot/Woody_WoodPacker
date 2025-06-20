@@ -37,3 +37,27 @@ Il nous faut un algo plus costaud qu'un ROT. On va aussi s'abstenir de prendre u
 On cherche un truc pas compliquer a implementer, mais un peu relou a defaire sans la bonne cle; Le TEA, Tiny Encryption Algorithm.<br>
 Une dizaine de ligne pour chiffrer, une autre dizaine pour dechiffrer, et on utilise un clef generer aleatoirement.<br>
 Le [TEA](https://fr.wikipedia.org/wiki/Tiny_Encryption_Algorithm) est un algo de chiffrement par bloc, en reseau de Feistel 32 tours.<br>
+
+
+
+notes:
+bgaertne@k0r3p14:Desktop/Woody_WoodPacker ‹main*›$ make fclean               
+Deleting woody_woodpacker objs ✔️
+Deleting woody_woodpacker binary ✔️
+bgaertne@k0r3p14:Desktop/Woody_WoodPacker ‹main*›$ make                      
+Compilation of woody_woodpacker ...
+woody_woodpacker created ✔️
+Compilation of woody_unpacker ...
+woody_unpacker created ✔️
+Compilation of stub ...
+stub created ✔️
+bgaertne@k0r3p14:Desktop/Woody_WoodPacker ‹main*›$ ./woody_woodpacker test   
+Generated key: 6BAA498AC6C99DFD4EFA5369FE451BC1
+bgaertne@k0r3p14:Desktop/Woody_WoodPacker ‹main*›$ cat stub encrypted > final
+bgaertne@k0r3p14:Desktop/Woody_WoodPacker ‹main*›$ chmod +x final            
+bgaertne@k0r3p14:Desktop/Woody_WoodPacker ‹main*›$ ./final                   
+Failed to deserialize Huffman tree
+bgaertne@k0r3p14:Desktop/Woody_WoodPacker ‹main*›$ make fclean
+Deleting woody_woodpacker objs ✔️
+Deleting woody_woodpacker binary ✔️
+bgaertne@k0r3p14:Desktop/Woody_WoodPacker ‹main*›$ 
