@@ -178,6 +178,7 @@ void decompress_data(int fd_in, int fd_out) {
     unsigned char byte;
     int bit_index;
 
+    
     while (read(fd_in, &byte, 1) == 1) {
         for (bit_index = 7; bit_index >= 0; --bit_index) {
             int bit = (byte >> bit_index) & 1;

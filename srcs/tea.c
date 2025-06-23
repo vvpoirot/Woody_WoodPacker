@@ -50,42 +50,18 @@ void generate_key(uint32_t *key, size_t keySize) {
     close(randomData);
 }
 
-
-// get key from argv[4]
-void get_key(uint32_t *key, const char *key_str) {
-    size_t len = strlen(key_str);
-    if (len != 32) {
-        printf("Error: Key must be 32 hexadecimal characters long.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    for (int i = 0; i < 4; i++) {
-        char hex[9];
-        strncpy(hex, key_str + i * 8, 8);
-        hex[8] = '\0';
-        key[i] = (uint32_t)strtoul(hex, NULL, 16);
-    }
-}
-
-void TEA(int inputFD, int outputFD, int mode) {
+void TEA(char* input, char* output, int size ,int mode) {
     uint32_t block[2];
     uint32_t key[4];
 
     if (mode == 0) {
         generate_key(key, sizeof(key));
         printf("Generated key: %08X%08X%08X%08X\n", key[0], key[1], key[2], key[3]);
-        write(outputFD, key, sizeof(key));
     } else {
-        // read the key
         if (read(inputFD, key, sizeof(key)) != sizeof(key)) {
             printf("Error reading key from input file.\n");
             close(inputFD);
             close(outputFD);
-            exit(EXIT_FAILURE);
-        }
-        // skip the key
-        if (lseek(inputFD, sizeof(key), SEEK_SET) == -1) {
-            perror("lseek failed");
             exit(EXIT_FAILURE);
         }
     }

@@ -3,17 +3,13 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 NAME = woody_woodpacker
 SRC = woody_woodpacker.c \
-		huffman.c \
-		tea.c
+		srcs/huffman.c \
+		srcs/tea.c
 SRC2 = woody_unpacker.c \
-		huffman.c \
-		tea.c
-STUBSRC = stub.c \
-		huffman.c \
-		tea.c
+		srcs/huffman.c \
+		srcs/tea.c
 OBJ = $(SRC:.c=.o)
 OBJ2 = $(SRC2:.c=.o)
-STUBOBJ = $(STUBSRC:.c=.o)
 
 CLR_RMV		:= \033[0m
 RED		    := \033[1;31m
@@ -23,7 +19,7 @@ BLUE		:= \033[1;34m
 CYAN 		:= \033[1;36m
 RM		    := rm -f
 
-all: $(NAME) unpacker stub
+all: $(NAME) unpacker
 
 $(NAME): $(OBJ)
 	@echo "$(GREEN)Compilation ${CLR_RMV}of ${YELLOW}$(NAME) ${CLR_RMV}..."
@@ -33,10 +29,6 @@ $(NAME): $(OBJ)
 %.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-stub: $(STUBOBJ)
-	@echo "$(GREEN)Compilation ${CLR_RMV}of ${YELLOW}stub ${CLR_RMV}..."
-	@$(CC) $(CFLAGS) -o stub $(STUBOBJ) -static
-	@echo "$(GREEN)stub created[0m ✔️"
 
 unpacker: $(OBJ2)
 	@echo "$(GREEN)Compilation ${CLR_RMV}of ${YELLOW}woody_unpacker ${CLR_RMV}..."

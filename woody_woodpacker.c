@@ -1,4 +1,4 @@
-#include "lib.h"
+#include "srcs/lib.h"
 
 void ft_error(char* msg) {
     write(2, "[ERROR] ", 8);
