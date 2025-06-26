@@ -17,8 +17,8 @@ void validArg(char* arg) {
         ft_error("Failed to read content of file.\n");
     close(fd);
 
-    // if (header[0] != 0x7F || header[1] != 'E' || header[2] != 'L' || header[3] != 'F' || header[4] != 2)
-    //     ft_error("File architecture not supported. x86_64 only.\n");
+    if (header[0] != 0x7F || header[1] != 'E' || header[2] != 'L' || header[3] != 'F' || header[4] != 2)
+        ft_error("File architecture not supported. x86_64 only.\n");
 }
 
 off_t getFileSize(int fd) {

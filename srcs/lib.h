@@ -38,4 +38,4 @@ void    huffman(int fd_in, int fd_out, int mode);
 void    encrypt(uint32_t *v, const uint32_t *k);
 void    decrypt(uint32_t *v, const uint32_t *k);
 void    generate_key(uint32_t *key, size_t keySize);
-void    TEA(char* payloadData, char* decryptedData, int payloadSize, int mode);
+void    TEA(int inputFD, int outputFD, int mode);

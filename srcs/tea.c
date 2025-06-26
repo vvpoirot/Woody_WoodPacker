@@ -50,7 +50,7 @@ void generate_key(uint32_t *key, size_t keySize) {
     close(randomData);
 }
 
-void TEA(char* input, char* output, int size ,int mode) {
+void TEA(int inputFD, int outputFD, int mode) {
     uint32_t block[2];
     uint32_t key[4];
 
