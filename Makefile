@@ -1,6 +1,6 @@
 # Variables
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=address -g
 NAME = woody_woodpacker
 SRC = woody_woodpacker.c \
 		srcs/huffman.c \
@@ -55,6 +55,7 @@ fclean: clean
 	@rm -f encrypted
 	@rm -f decrypted
 	@rm -f decompressed
+	@rm -f memory
 	@ echo "$(RED)Deleting $(CYAN)$(NAME) $(CLR_RMV)binary ✔️"
 
 re: fclean all
