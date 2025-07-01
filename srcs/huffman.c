@@ -143,91 +143,30 @@ void compress_data(int fd_in, int fd_out, char* codes[]) {
     }
 }
 
-// Fonction pour désérialiser l'arbre de Huffman
-Node* deserialize_tree(int fd) {
-    char node_type;
-    if (read(fd, &node_type, 1) != 1) {
-        return NULL;
-    }
-
-    if (node_type == '1') {
-        unsigned char character;
-        if (read(fd, &character, 1) != 1) {
-            return NULL;
-        }
-        return create_node(character, 0);
-    } else if (node_type == '0') {
-        Node* node = create_node('\0', 0);
-        node->left = deserialize_tree(fd);
-        node->right = deserialize_tree(fd);
-        return node;
-    }
-
-    return NULL;
-}
-
-// Fonction pour décompresser les données
-void decompress_data(int fd_in, int fd_out) {
-    Node* root = deserialize_tree(fd_in);
-    if (root == NULL) {
-        fprintf(stderr, "Failed to deserialize Huffman tree\n");
-        return;
-    }
-
-    Node* current = root;
-    unsigned char byte;
-    int bit_index;
-
-    
-    while (read(fd_in, &byte, 1) == 1) {
-        for (bit_index = 7; bit_index >= 0; --bit_index) {
-            int bit = (byte >> bit_index) & 1;
-            current = bit ? current->right : current->left;
-
-            if (current == NULL) {
-                fprintf(stderr, "Invalid bit sequence or corrupted Huffman tree\n");
-                return;
-            }
-
-            if (current->left == NULL && current->right == NULL) {
-                write(fd_out, &current->character, 1);
-                current = root;
-            }
-        }
-    }
-}
-
 // Fonction principale pour compresser ou décompresser
-void huffman(int fd_in, int fd_out, int mode) {
+void huffman(int fd_in, int fd_out) {
+    unsigned int frequencies[NUM_SYMBOLS] = {0};
+    char buffer[1024];
+    ssize_t bytes_read;
 
-    if (mode == 0) {
-        // Mode compression
-        unsigned int frequencies[NUM_SYMBOLS] = {0};
-        char buffer[1024];
-        ssize_t bytes_read;
-
-        while ((bytes_read = read(fd_in, buffer, sizeof(buffer))) > 0) {
-            for (ssize_t i = 0; i < bytes_read; i++) {
-                frequencies[(unsigned char)buffer[i]]++;
-            }
+    while ((bytes_read = read(fd_in, buffer, sizeof(buffer))) > 0) {
+        for (ssize_t i = 0; i < bytes_read; i++) {
+            frequencies[(unsigned char)buffer[i]]++;
         }
+    }
 
-        Node* root = build_huffman_tree(frequencies);
+    Node* root = build_huffman_tree(frequencies);
 
-        char* codes[NUM_SYMBOLS] = {NULL};
-        char code[NUM_SYMBOLS];
-        generate_huffman_codes(root, codes, code, 0);
+    char* codes[NUM_SYMBOLS] = {NULL};
+    char code[NUM_SYMBOLS];
+    generate_huffman_codes(root, codes, code, 0);
 
-        serialize_tree(root, fd_out);
-        compress_data(fd_in, fd_out, codes);
+    serialize_tree(root, fd_out);
+    compress_data(fd_in, fd_out, codes);
 
-        for (int i = 0; i < NUM_SYMBOLS; i++) {
-            if (codes[i] != NULL) {
-                free(codes[i]);
-            }
+    for (int i = 0; i < NUM_SYMBOLS; i++) {
+        if (codes[i] != NULL) {
+            free(codes[i]);
         }
-    } else {
-        // Mode décompression
-        decompress_data(fd_in, fd_out);
     }
 }

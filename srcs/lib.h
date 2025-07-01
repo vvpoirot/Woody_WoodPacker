@@ -30,9 +30,7 @@ Node*   build_huffman_tree(unsigned int* frequencies);
 void    generate_huffman_codes(Node* root, char* codes[], char* code, int depth);
 void    serialize_tree(Node* node, int fd);
 void    compress_data(int fd_in, int fd_out, char* codes[]);
-Node*   deserialize_tree(int fd);
-void    decompress_data(int fd_in, int fd_out);
-void    huffman(int fd_in, int fd_out, int mode);
+void    huffman(int fd_in, int fd_out);
 
 
 void    encrypt(uint32_t *v, const uint32_t *k);
