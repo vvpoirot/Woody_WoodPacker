@@ -36,4 +36,5 @@ void    huffman(int fd_in, int fd_out);
 void    encrypt(uint32_t *v, const uint32_t *k);
 void    decrypt(uint32_t *v, const uint32_t *k);
 void    generate_key(uint32_t *key, size_t keySize);
-void    TEA(int inputFD, int outputFD, int mode);
+void    TEA_encrypt(int inputFD, int outputFD);
+void    TEA_decrypt(char *input, char *output, size_t size);
