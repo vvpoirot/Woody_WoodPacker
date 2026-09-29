@@ -4,10 +4,12 @@ CFLAGS = -Wall -Wextra -Werror #-fsanitize=address -g
 NAME = woody_woodpacker
 SRC = woody_woodpacker.c \
 		srcs/huffman.c \
-		srcs/tea.c
+		srcs/tea_encrypt.c \
+		srcs/tea_decrypt.c
 SRC2 = woody_unpacker.c \
 		srcs/huffman.c \
-		srcs/tea.c
+		srcs/tea_encrypt.c \
+		srcs/tea_decrypt.c
 SRCM = srcs/memory_huffman.c
 OBJ = $(SRC:.c=.o)
 OBJ2 = $(SRC2:.c=.o)

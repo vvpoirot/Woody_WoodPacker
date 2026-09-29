@@ -25,7 +25,7 @@ void TEA_decrypt(char *input, char *output, size_t size) {
         uint32_t block[2];
         memcpy(block, input + i, sizeof(block));
 
-        decrypt_memory(block, key);
+        decrypt(block, key);
         memcpy(output + i, block, sizeof(block));
     }
 }

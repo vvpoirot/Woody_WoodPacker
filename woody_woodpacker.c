@@ -36,13 +36,13 @@ int main(int argc, char** argv) {
     int compressedFD = open("compressed", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     huffman(inputFD, compressedFD);
 
-    // int compressedInputFD = open("compressed", O_RDONLY);
-    // int encryptedFD = open("encrypted", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    // TEA(compressedInputFD, encryptedFD, 0);
+    int compressedInputFD = open("compressed", O_RDONLY);
+    int encryptedFD = open("encrypted", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    TEA_encrypt(compressedInputFD, encryptedFD);
 
     close(inputFD);
     close(compressedFD);
-    // close(compressedInputFD);
-    // close(encryptedFD);
+    close(compressedInputFD);
+    close(encryptedFD);
     return EXIT_SUCCESS;
 }
